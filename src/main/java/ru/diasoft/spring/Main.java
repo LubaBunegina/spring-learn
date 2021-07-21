@@ -1,3 +1,5 @@
+package ru.diasoft.spring;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import ru.diasoft.spring.entity.TestLearn;
