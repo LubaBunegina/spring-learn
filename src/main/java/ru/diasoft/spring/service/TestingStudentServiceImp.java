@@ -1,20 +1,25 @@
 package ru.diasoft.spring.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.diasoft.spring.entity.AnswerLearn;
 import ru.diasoft.spring.entity.StudentLearn;
 import ru.diasoft.spring.entity.TestLearn;
 
 import java.util.List;
 
+@Service
 public class TestingStudentServiceImp implements TestingStudentService {
 
     public TestingStudentServiceImp() {
 
     }
 
+    @Autowired
+    ScannerService scanner;
+
     public void execute(List<TestLearn> questionsList, List<AnswerLearn> rightAnswersList, int testScore) {
 
-        ScannerTestStudentServiceImp scanner = new ScannerTestStudentServiceImp();
         StudentLearn student = new StudentLearn(scanner.scanStudentName(), 0);
         PrintAnswerServiceImp printer = new PrintAnswerServiceImp();
 

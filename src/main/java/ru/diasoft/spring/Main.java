@@ -12,7 +12,6 @@ import ru.diasoft.spring.service.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
 @Configuration
 @ComponentScan(basePackages = "ru.diasoft",
@@ -33,7 +32,7 @@ public class Main {
         List<TestLearn> testList = service.getAllQuestions(resQues);
         List<AnswerLearn> rightAnswerList = service.getAllAnswers(resAns);
 
-        TestingStudentService testing = new TestingStudentServiceImp();
+        TestingStudentService testing = context.getBean(TestingStudentService.class);
         testing.execute(testList, rightAnswerList, testScore);
 
         context.close();

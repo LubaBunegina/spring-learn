@@ -1,8 +1,7 @@
 package ru.diasoft.spring.service;
 
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import ru.diasoft.spring.dao.TestDao;
+import ru.diasoft.spring.dao.LearnDao;
 import ru.diasoft.spring.entity.AnswerLearn;
 import ru.diasoft.spring.entity.TestLearn;
 
@@ -10,9 +9,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class TestServiceImp implements TestService{
-    private final TestDao dao;
+    private final LearnDao dao;
 
-    public TestServiceImp(TestDao dao) {
+    public TestServiceImp(LearnDao dao) {
         this.dao = dao;
     }
 
