@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CsvLoaderImp  {
+public class LoaderService  {
     
     private final ResourceLoader resourceLoader;
 

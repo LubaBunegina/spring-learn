@@ -8,9 +8,9 @@ import ru.diasoft.spring.service.TestServiceImp;
 
 @Configuration
 public class ServicesConfig {
-    @Bean
+ /*   @Bean
     public TestService testService(LearnDao dao){
         return new TestServiceImp(dao);
-    }
+    }*/
 
 }

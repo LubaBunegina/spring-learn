@@ -2,7 +2,6 @@ package ru.diasoft.spring.service;
 
 import java.io.IOException;
 
-public interface TestingStudentService {
+public interface StudentService {
     int execute() throws IOException;
-    int getCommonScore() throws IOException;
 }

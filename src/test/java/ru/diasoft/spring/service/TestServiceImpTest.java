@@ -1,62 +1,47 @@
 package ru.diasoft.spring.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.Resource;
+import org.mockito.Mockito;
 import org.junit.jupiter.api.Test;
-import ru.diasoft.spring.config.TestConfig;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.diasoft.spring.dao.LearnDao;
-import ru.diasoft.spring.entity.AnswerLearn;
 import ru.diasoft.spring.entity.TestLearn;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 @DisplayName("Сервис по начитке вопросов/ответов из файла")
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
 public class TestServiceImpTest  {
-
-    Resource resQ;
-    Resource resA;
 
     @Mock
     LearnDao dao;
 
-    @InjectMocks
-    TestServiceImp learnService;
+    private TestService learnService;
 
-    @InjectMocks
-    CsvLoaderImp loader;
-
-    @MockBean
-    TestConfig config;
+    @BeforeEach
+    void setUp(){
+        learnService = new TestServiceImp(dao);
+    }
 
    @DisplayName("Тест. Возвращает все вопросы")
    @Test
     public void getAllTest() throws IOException {
 
-       resQ = loader.getResource("question");
+       List<TestLearn> daoList = new ArrayList<>();
+       daoList.add(new TestLearn(1,"q", "a", "r"));
 
-       List<TestLearn> testingList = dao.getAllQuestions(resQ);
-       List<TestLearn> tList = learnService.getAllQuestions(resQ);
+       Mockito.when(dao.getAllQuestions()).thenReturn(daoList);
+       List<TestLearn> tList = learnService.getAllQuestions();
 
-       assertEquals(tList, testingList);
+       assertEquals(tList, daoList);
+
    }
 
-    @DisplayName("Тест. Возвращает все ответы")
-    @Test
-    public void getAllAnswers() throws IOException {
-
-        resA = loader.getResource("answer");
-
-        List<AnswerLearn> rightAnswerList = dao.getAllAnswers(resA);
-        List<AnswerLearn> tList = learnService.getAllAnswers(resA);
-        assertEquals(tList, rightAnswerList);
-    }
 }
