@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestDaoSimple implements TestDao {
+public class LearnDaoSimple implements LearnDao {
 
     public List<TestLearn> getAllQuestions(Resource res) throws IOException {
         BufferedReader is =  new BufferedReader(new InputStreamReader(res.getInputStream()));
