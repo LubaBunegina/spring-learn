@@ -1,13 +1,14 @@
 package ru.diasoft.spring.service;
 
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import ru.diasoft.spring.dao.LearnDao;
-import ru.diasoft.spring.entity.AnswerLearn;
 import ru.diasoft.spring.entity.TestLearn;
 
 import java.io.IOException;
 import java.util.List;
 
+@Service
 public class TestServiceImp implements TestService{
     private final LearnDao dao;
 
@@ -15,11 +16,8 @@ public class TestServiceImp implements TestService{
         this.dao = dao;
     }
 
-    public List<TestLearn> getAllQuestions(Resource res) throws IOException {
-        return dao.getAllQuestions(res);
+    public List<TestLearn> getAllQuestions() throws IOException {
+        return dao.getAllQuestions();
     }
 
-    public List<AnswerLearn> getAllAnswers(Resource res) throws IOException {
-        return dao.getAllAnswers(res);
-    }
 }
