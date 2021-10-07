@@ -7,14 +7,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.diasoft.spring.config.MessageConfig;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 @DisplayName("Сервис подсчета правильных ответов и анализа результатов")
 @ExtendWith(SpringExtension.class)
 class StudentServiceImpTest {
+
+    @Mock
+    MessageConfig props;
 
     @Mock
     ScannerService scanner;
@@ -25,11 +29,14 @@ class StudentServiceImpTest {
     @Mock
     PrintService printService;
 
+    @Mock
+    MessageSource messRes;
+
     StudentServiceImp testingStudent;
 
     @BeforeEach
     void setUp(){
-        testingStudent = new StudentServiceImp(scanner, loaderService, printService);
+        testingStudent = new StudentServiceImp(props, scanner, loaderService, printService, messRes);
     }
 
     @Test
@@ -38,6 +45,8 @@ class StudentServiceImpTest {
 
         Mockito.when(scanner.getCommonScore()).thenReturn(2);
         Mockito.when(loaderService.getTestScore()).thenReturn(5);
+
+        Mockito.when(props.getLocale()).thenReturn("en");
 
         int res = testingStudent.execute();
         Assert.assertEquals(0, res);
@@ -49,6 +58,8 @@ class StudentServiceImpTest {
 
         Mockito.when(scanner.getCommonScore()).thenReturn(6);
         Mockito.when(loaderService.getTestScore()).thenReturn(5);
+
+        Mockito.when(props.getLocale()).thenReturn("en");
 
         int res = testingStudent.execute();
         Assert.assertEquals(1, res);
