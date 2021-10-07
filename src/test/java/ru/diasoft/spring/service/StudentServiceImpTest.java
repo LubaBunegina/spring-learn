@@ -5,38 +5,42 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.context.MessageSource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.diasoft.spring.config.MessageConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+
 
 import java.io.IOException;
 
 @DisplayName("Сервис подсчета правильных ответов и анализа результатов")
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 class StudentServiceImpTest {
 
-    @Mock
-    MessageConfig props;
-
-    @Mock
+    @MockBean
     ScannerService scanner;
 
-    @Mock
+    @MockBean
     LoaderService loaderService;
 
-    @Mock
+    @MockBean
     PrintService printService;
 
-    @Mock
-    MessageSource messRes;
+    @MockBean
+    MessageService messRes;
+
+    @MockBean
+    Starter starter;
 
     StudentServiceImp testingStudent;
 
     @BeforeEach
     void setUp(){
-        testingStudent = new StudentServiceImp(props, scanner, loaderService, printService, messRes);
+        testingStudent = new StudentServiceImp(scanner, loaderService, printService, messRes);
     }
 
     @Test
@@ -45,8 +49,6 @@ class StudentServiceImpTest {
 
         Mockito.when(scanner.getCommonScore()).thenReturn(2);
         Mockito.when(loaderService.getTestScore()).thenReturn(5);
-
-        Mockito.when(props.getLocale()).thenReturn("en");
 
         int res = testingStudent.execute();
         Assert.assertEquals(0, res);
@@ -58,8 +60,6 @@ class StudentServiceImpTest {
 
         Mockito.when(scanner.getCommonScore()).thenReturn(6);
         Mockito.when(loaderService.getTestScore()).thenReturn(5);
-
-        Mockito.when(props.getLocale()).thenReturn("en");
 
         int res = testingStudent.execute();
         Assert.assertEquals(1, res);

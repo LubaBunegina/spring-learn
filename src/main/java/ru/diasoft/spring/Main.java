@@ -15,10 +15,7 @@ public class Main {
 
    public static void main(String[] args) throws IOException {
 
-        ApplicationContext context = SpringApplication.run(Main.class, args);
-
-        StudentService testing = context.getBean(StudentService.class);
-        testing.execute();
+       SpringApplication.run(Main.class, args);
 
     }
 }

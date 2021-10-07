@@ -8,7 +8,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 @Configuration
 public class MessageSourceConfig {
 
-    @Bean(name = "messageResourceSB")
+    @Bean
     public MessageSource messageSource(MessageConfig props) {
         ReloadableResourceBundleMessageSource messageSource
                 = new ReloadableResourceBundleMessageSource();

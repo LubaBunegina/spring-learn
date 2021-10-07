@@ -13,8 +13,7 @@ public class LoaderService  {
 
     private final ResourceLoader resourceLoader;
 
-    @Autowired
-    private QuestionConfig config;
+    private final QuestionConfig config;
 
     public Resource getResource()
     {

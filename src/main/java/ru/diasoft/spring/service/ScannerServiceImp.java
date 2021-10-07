@@ -1,5 +1,6 @@
 package ru.diasoft.spring.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
@@ -13,46 +14,48 @@ import java.util.Locale;
 import java.util.Scanner;
 
 @Service
+@AllArgsConstructor
 public class ScannerServiceImp implements ScannerService{
 
     private Scanner in;
-    private final MessageConfig props;
+
+    private final MessageService messageService;
+
+    private final TestService testService;
+
+    private final PrintService printService;
+
 
     @Autowired
-    TestService testService;
-
-    @Autowired
-    PrintService printService;
-
-    @Autowired
-    @Qualifier("messageResourceSB")
-    MessageSource messRes;
-
-    public ScannerServiceImp(MessageConfig props){
-        this.props = props;
+    public ScannerServiceImp(MessageConfig props,
+                             TestService testService,
+                             PrintService printService,
+                             MessageService messageService){
+        this.testService = testService;
+        this.printService = printService;
+        this.messageService = messageService;
         in = new Scanner(System.in);
     }
 
     public String scanStudentName() {
-        System.out.println(messRes.getMessage("askName", null, new Locale(props.getLocale())));
+        System.out.println(messageService.getMessage("askName"));
         String name = in.nextLine();
         return name;
     }
 
     public String scanAnswerOnQuestion(String question, String answers) {
 
-        System.out.println(messRes.getMessage("question", null, new Locale(props.getLocale())) + ": "
-                + messRes.getMessage(question, null, new Locale(props.getLocale())));
+        System.out.println(messageService.getMessage("question") + ": "
+                + messageService.getMessage(question));
 
-        System.out.println(messRes.getMessage("answers", null, new Locale(props.getLocale())) + ": "
-                + messRes.getMessage(answers, null, new Locale(props.getLocale())));
+        System.out.println(messageService.getMessage("answers") + ": "
+                + messageService.getMessage(answers));
         String answer = in.nextLine();
         return answer;
     }
 
     public int getCommonScore() throws IOException {
         List<TestLearn> questionsList = testService.getAllQuestions();
-        scanStudentName();
         int score = 0;
         for(TestLearn questionItem : questionsList){
             String studentAnswer = scanAnswerOnQuestion(questionItem.getQuestion(), questionItem.getAnswers());

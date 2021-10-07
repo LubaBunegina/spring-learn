@@ -7,38 +7,36 @@ import org.springframework.stereotype.Service;
 import ru.diasoft.spring.config.MessageConfig;
 
 import java.io.IOException;
-import java.util.Locale;
 
 @Service
 public class StudentServiceImp implements StudentService {
-    private final MessageConfig props;
 
     private final ScannerService scanner;
 
     private final LoaderService loaderService;
 
     private final PrintService printService;
-    
-    private final MessageSource messRes;
+
+    private final MessageService messageService;
+
 
     @Autowired
-    public StudentServiceImp(MessageConfig props, ScannerService scanner, LoaderService loaderService,
-                             PrintService printService, @Qualifier("messageResourceSB") MessageSource messRes) {
-        this.props = props;
+    public StudentServiceImp(ScannerService scanner, LoaderService loaderService,
+                             PrintService printService, MessageService messageService) {
         this.scanner = scanner;
         this.loaderService = loaderService;
         this.printService = printService;
-        this.messRes = messRes;
+        this.messageService = messageService;
     }
 
     public int execute() throws IOException {
         int score = scanner.getCommonScore();
 
         if(score >= loaderService.getTestScore()){
-            printService.printCommonInfo(messRes.getMessage("resultSuccess", null, new Locale(props.getLocale())));
+            printService.printCommonInfo(messageService.getMessage("resultSuccess"));
             return 1;
         } else {
-            printService.printCommonInfo(messRes.getMessage("resultFailed", null, new Locale(props.getLocale())));
+            printService.printCommonInfo(messageService.getMessage("resultFailed"));
             return 0;
         }
     }
