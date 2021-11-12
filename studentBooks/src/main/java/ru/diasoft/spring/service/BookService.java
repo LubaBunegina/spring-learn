@@ -7,12 +7,11 @@ import ru.diasoft.spring.domain.Genre;
 import java.util.List;
 
 public interface BookService {
-    void insert(Book book);
-    void update(Book book);
-    void delete(Long id);
-    void printBookInfo(Book book, Author author, Genre genre);
+    void insert(String bookName, String genreName, String authorName) throws Exception;
+    void update(Long bookId, String bookName, String authorName, String genreName) throws Exception;
+    void delete(Long id) throws Exception;
     Book getById(Long id);
-    List<Book> getByAuthorId(Long authorId);
+    List<Book> getBookByAuthor(String authorName) throws Exception;
+    List<Book> getBookByGenre(String genreName) throws Exception;
     List<Book> getAll();
-    Long getMaxId();
 }

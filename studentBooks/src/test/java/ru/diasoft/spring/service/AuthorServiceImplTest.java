@@ -14,6 +14,8 @@ import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Genre;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
@@ -31,7 +33,8 @@ public class AuthorServiceImplTest {
     @DisplayName("сохраняет автора в БД")
     @Test
     public void shouldSaveAuthor() {
-        Author author1 = new Author(1,"author1");
+        Author author1 = new Author();
+        author1.setName("author1");
         service.insert(author1);
         verify(dao).insert(author1);
     }
@@ -39,8 +42,9 @@ public class AuthorServiceImplTest {
     @DisplayName("возвращает автора по id")
     @Test
     public void shouldReturnAuthorById(){
-        Author expectedAuthor = new Author(1,"author1");
-        Mockito.when(dao.getById(1L)).thenReturn(expectedAuthor);
+        Author expectedAuthor = new Author();
+        expectedAuthor.setName("author1");
+        Mockito.when(dao.getById(1L)).thenReturn(Optional.of(expectedAuthor));
 
         Author actualAuthor = service.getById(1L);
 
@@ -51,8 +55,9 @@ public class AuthorServiceImplTest {
     @DisplayName("возвращает автора по имени")
     @Test
     public void shouldReturnAuthorByName(){
-        Author expectedAuthor = new Author(1,"author1");
-        Mockito.when(dao.getByName("author1")).thenReturn(expectedAuthor);
+        Author expectedAuthor = new Author();
+        expectedAuthor.setName("author1");
+        Mockito.when(dao.getByName("author1")).thenReturn(Optional.of(expectedAuthor));
         Author actualAuthor = service.getByName("author1");
         assertEquals(expectedAuthor, actualAuthor);
     }

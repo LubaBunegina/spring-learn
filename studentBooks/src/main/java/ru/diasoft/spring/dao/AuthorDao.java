@@ -1,12 +1,12 @@
 package ru.diasoft.spring.dao;
 
 import ru.diasoft.spring.domain.Author;
+import ru.diasoft.spring.domain.Book;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface AuthorDao {
     void insert(Author author);
-    Author getById(Long id);
-    Author getByName(String name);
-    Long getMaxId();
+    Optional<Author> getById(Long id);
+    Optional<Author> getByName(String name);
 }
