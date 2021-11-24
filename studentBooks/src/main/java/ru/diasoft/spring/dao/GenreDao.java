@@ -2,11 +2,10 @@ package ru.diasoft.spring.dao;
 
 import ru.diasoft.spring.domain.Genre;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface GenreDao {
     void insert(Genre genre);
-    Genre getById(Long id);
-    Genre getByName(String name);
-    Long getMaxId();
+    Optional<Genre> getById(Long id);
+    Optional<Genre> getByName(String name);
 }

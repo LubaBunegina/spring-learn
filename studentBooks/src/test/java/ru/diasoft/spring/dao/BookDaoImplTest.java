@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.Rollback;
@@ -12,41 +14,46 @@ import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Genre;
 
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с книгами должно")
-@JdbcTest
-@Import(BookDaoJdbc.class)
-public class BookDaoJdbcTest {
+@DataJpaTest
+@Import(BookDaoImpl.class)
+public class BookDaoImplTest {
 
-    private static final long EXISTING_AUTHOR_ID = 1;
-    private static final long EXISTING_GENRE_ID = 1;
     private static final long EXISTING_BOOK_ID = 1;
     private static final String EXISTING_BOOK_NAME = "bookTest";
     private static final String EXISTING_GENRE_NAME = "genreTest";
     private static final String EXISTING_AUTHOR_NAME = "authorTest";
 
     @Autowired
-    private BookDaoJdbc bookDao;
+    private BookDaoImpl bookDao;
+
+    @Autowired
+    private TestEntityManager em;
 
     @Rollback(value = true)
     @DisplayName("добавлять книгу в БД")
     @Test
     void shouldInsertBook() {
-        Book expectedBook = new Book(2, "bookTest2", new Genre(1, "genreTest"),new Author(1, "authorTest"));
+        Book expectedBook = createBook();
         bookDao.insert(expectedBook);
-        Book actualBook = bookDao.getById(expectedBook.getId());
+
+
+        Book actualBook = em.find(Book.class, expectedBook.getId());
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
-    @DisplayName("возвращать ожидаемую книгу по её автору id")
+    @DisplayName("возвращать ожидаемую книгу по её автору")
     @Test
     void shouldReturnExpectedBookByAuthorId() {
-        Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME),
-                new Author(EXISTING_AUTHOR_ID, EXISTING_AUTHOR_NAME));
-        List<Book> actualBooks =  bookDao.getByAuthorId(expectedBook.getAuthor().getId());
+        Book expectedBook = createBook();
+        em.persist(expectedBook);
+        List<Book> actualBooks =  bookDao.getBookByAuthor(expectedBook.getAuthor());
         assertThat(actualBooks).usingFieldByFieldElementComparator()
                 .containsExactlyInAnyOrder(expectedBook);
     }
@@ -54,34 +61,51 @@ public class BookDaoJdbcTest {
     @DisplayName("возвращать ожидаемую книгу по её id")
     @Test
     void shouldReturnExpectedBookById() {
-        Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME),
-                new Author(EXISTING_AUTHOR_ID, EXISTING_AUTHOR_NAME));
-        Book actualBook = bookDao.getById(expectedBook.getId());
-        assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
+        Book expectedBook = createBook();
+        em.persist(expectedBook);
+        Optional<Book> actualBook = bookDao.getById(expectedBook.getId());
+        assertThat(actualBook.get()).usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
     @DisplayName("удалять заданную книгу по её id")
     @Test
-    void shouldCorrectDeletePersonById() {
+    void shouldCorrectDeleteBookById() {
+        Book expectedBook = createBook();
+        em.persist(expectedBook);
         assertThatCode(() -> bookDao.getById(EXISTING_BOOK_ID))
                 .doesNotThrowAnyException();
-
         bookDao.delete(EXISTING_BOOK_ID);
-
-        assertThatThrownBy(() -> bookDao.getById(EXISTING_BOOK_ID))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        em.detach(expectedBook);
+        assertThat(bookDao.getById(EXISTING_BOOK_ID))
+                .isEqualTo(Optional.empty());
     }
 
 
     @DisplayName("возвращать ожидаемый список книг")
     @Test
-    void shouldReturnExpectedPersonsList() {
-        Book expectedBook = new Book(EXISTING_BOOK_ID, EXISTING_BOOK_NAME, new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME),
-                new Author(EXISTING_AUTHOR_ID, EXISTING_AUTHOR_NAME));
-        List<Book> actualPersonList = bookDao.getAll();
-        assertThat(actualPersonList)
+    void shouldReturnExpectedBooksList() {
+        Book expectedBook = createBook();
+        em.persist(expectedBook);
+        List<Book> actualBookList = bookDao.getAll();
+        assertThat(actualBookList)
                 .usingFieldByFieldElementComparator()
                 .containsExactlyInAnyOrder(expectedBook);
+    }
+
+    private Book createBook(){
+        Book expectedBook = new Book();
+
+        Genre genre = new Genre();
+        genre.setName(EXISTING_GENRE_NAME);
+
+        Author author = new Author();
+        author.setName(EXISTING_AUTHOR_NAME);
+
+        expectedBook.setName(EXISTING_BOOK_NAME);
+        expectedBook.setAuthor(author);
+        expectedBook.setGenre(genre);
+
+        return expectedBook;
     }
 
 }

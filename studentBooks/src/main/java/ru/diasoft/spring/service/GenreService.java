@@ -8,5 +8,4 @@ public interface GenreService {
     void insert(Genre genre);
     Genre getById(Long id);
     Genre getByName(String name);
-    Long getMaxId();
 }
