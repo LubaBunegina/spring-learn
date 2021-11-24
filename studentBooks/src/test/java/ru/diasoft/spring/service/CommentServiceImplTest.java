@@ -14,6 +14,8 @@ import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Comment;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.repository.BookRepository;
+import ru.diasoft.spring.repository.CommentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +36,10 @@ public class CommentServiceImplTest {
     private static final String COMMENT_NIK = "nik1";
 
     @MockBean
-    CommentDao commentDao;
+    CommentRepository commentDao;
 
     @MockBean
-    BookDao bookDao;
+    BookRepository bookDao;
 
     @Autowired
     CommentService service;
@@ -46,10 +48,10 @@ public class CommentServiceImplTest {
     @Test
     public void shouldSaveComment() throws Exception {
         Comment comment = createComment(COMMENT_NIK, COMMENT_TEXT);
-        Mockito.when(bookDao.getByName(BOOK_NAME)).thenReturn(
+        Mockito.when(bookDao.findBookByName(BOOK_NAME)).thenReturn(
                 Optional.of(createBookForTest(BOOK_NAME, BOOK_AUTHOR, BOOK_GENRE)));
         service.insert(COMMENT_NIK, BOOK_NAME, COMMENT_TEXT);
-        verify(commentDao).insert(comment);
+        verify(commentDao).save(comment);
     }
 
     @DisplayName("возвращает все комментарии для книги")
@@ -59,10 +61,10 @@ public class CommentServiceImplTest {
         Comment expectedComment = createComment(COMMENT_NIK, COMMENT_TEXT);
         List<Comment> expectedCommentList = new ArrayList<>();
         expectedCommentList.add(expectedComment);
-        Mockito.when(bookDao.getByName(BOOK_NAME)).thenReturn(
+        Mockito.when(bookDao.findBookByName(BOOK_NAME)).thenReturn(
                 Optional.of(expectedBook));
 
-        Mockito.when(commentDao.getCommentByBook(expectedBook)).thenReturn(expectedCommentList);
+        Mockito.when(commentDao.findCommentsByBook(expectedBook)).thenReturn(expectedCommentList);
 
         List<Comment> actualCommentList = service.getCommentByBook(BOOK_NAME);
 

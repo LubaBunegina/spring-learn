@@ -7,7 +7,6 @@ import ru.diasoft.spring.domain.Comment;
 import ru.diasoft.spring.domain.Genre;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PrintBooksServiceImpl implements PrintBooksService{
