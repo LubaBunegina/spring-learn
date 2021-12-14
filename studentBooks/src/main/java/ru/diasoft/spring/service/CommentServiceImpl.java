@@ -37,6 +37,20 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
+    public Comment insert(String author, Long bookId, String commentText) {
+        Optional<Book> optionalBook = bookDao.findById(bookId);
+        if(optionalBook.isPresent()){
+            Comment comment = new Comment();
+            comment.setBook(optionalBook.get());
+            comment.setText(commentText);
+            comment.setAuthor(author);
+            Comment savedComment = commentDao.save(comment);
+            return savedComment;
+        }
+        return null;
+    }
+
+    @Override
     public List<Comment> getCommentByBook(String bookName) {
         Optional<Book> optionalBook = bookDao.findBookByName(bookName);
         if(optionalBook.isPresent()) {

@@ -44,13 +44,23 @@ public class CommentServiceImplTest {
     @Autowired
     CommentService service;
 
-    @DisplayName("сохраняет комментарий")
+    @DisplayName("сохраняет комментарий по названию книги")
     @Test
-    public void shouldSaveComment() throws Exception {
+    public void shouldSaveCommentByBookName() throws Exception {
         Comment comment = createComment(COMMENT_NIK, COMMENT_TEXT);
         Mockito.when(bookDao.findBookByName(BOOK_NAME)).thenReturn(
                 Optional.of(createBookForTest(BOOK_NAME, BOOK_AUTHOR, BOOK_GENRE)));
         service.insert(COMMENT_NIK, BOOK_NAME, COMMENT_TEXT);
+        verify(commentDao).save(comment);
+    }
+
+    @DisplayName("сохраняет комментарий по id книги")
+    @Test
+    public void shouldSaveCommentByBookId() throws Exception {
+        Comment comment = createComment(COMMENT_NIK, COMMENT_TEXT);
+        Mockito.when(bookDao.findById(0L)).thenReturn(
+                Optional.of(createBookForTest(BOOK_NAME, BOOK_AUTHOR, BOOK_GENRE)));
+        service.insert(COMMENT_NIK, 0L, COMMENT_TEXT);
         verify(commentDao).save(comment);
     }
 

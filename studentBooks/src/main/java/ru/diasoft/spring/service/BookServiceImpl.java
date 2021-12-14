@@ -11,6 +11,7 @@ import ru.diasoft.spring.domain.Genre;
 import ru.diasoft.spring.repository.AuthorRepository;
 import ru.diasoft.spring.repository.BookRepository;
 import ru.diasoft.spring.repository.GenreRepository;
+import ru.diasoft.spring.rest.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class BookServiceImpl implements BookService {
     private final AuthorRepository authorDao;
 
     @Override
-    public void insert(String bookName, String genreName, String authorName) throws Exception {
+    public Book insert(String bookName, String genreName, String authorName) throws Exception {
 
         if(genreName == null || bookName == null || authorName == null){
             throw new Exception("genreName or bookName or authorName is empty");
@@ -54,7 +55,8 @@ public class BookServiceImpl implements BookService {
         book.setName(bookName);
         book.setAuthor(author);
         book.setGenre(genre);
-        bookDao.saveAndFlush(book);
+        Book newBook = bookDao.saveAndFlush(book);
+        return newBook;
     }
 
     @Override
@@ -68,25 +70,31 @@ public class BookServiceImpl implements BookService {
                 throw new Exception("Book not found id=" + bookId);
             } else {
                 bookUpdate = optionalBook.get();
-                Optional<Genre> optionalGenre = genreDao.findByName(genreName);
-                Optional<Author> optionalAuthor = authorDao.findByName(authorName);
+
                 Genre genre;
                 Author author;
-                if(optionalGenre.isPresent()){
-                    genre = optionalGenre.get();
-                } else {
-                    genre = new Genre();
-                    genre.setName(genreName);
+
+                if(genreName != null) {
+                    Optional<Genre> optionalGenre = genreDao.findByName(genreName);
+                    if (optionalGenre.isPresent()) {
+                        genre = optionalGenre.get();
+                    } else {
+                        genre = new Genre();
+                        genre.setName(genreName);
+                    }
+                    bookUpdate.setGenre(genre);
                 }
-                if(optionalAuthor.isPresent()){
-                    author = optionalAuthor.get();
-                } else {
-                    author = new Author();
-                    author.setName(authorName);
+                if(authorName != null) {
+                    Optional<Author> optionalAuthor = authorDao.findByName(authorName);
+                    if (optionalAuthor.isPresent()) {
+                        author = optionalAuthor.get();
+                    } else {
+                        author = new Author();
+                        author.setName(authorName);
+                    }
+                    bookUpdate.setAuthor(author);
                 }
                 bookUpdate.setName(bookName);
-                bookUpdate.setGenre(genre);
-                bookUpdate.setAuthor(author);
 
                 bookDao.save(bookUpdate);
             }
@@ -104,8 +112,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getById(Long id) {
-        Optional<Book> optionalBook = bookDao.findById(id);
-        return optionalBook.get();
+        Book optionalBook = bookDao.findById(id).orElseThrow(NotFoundException::new);
+        return optionalBook;
     }
 
     @Override
