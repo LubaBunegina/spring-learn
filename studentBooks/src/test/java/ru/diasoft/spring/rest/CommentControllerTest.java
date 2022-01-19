@@ -6,14 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Comment;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.rest.CommentController;
+import ru.diasoft.spring.rest.CommentDto;
+import ru.diasoft.spring.security.CustomUserDetailsService;
 import ru.diasoft.spring.service.BookService;
 import ru.diasoft.spring.service.CommentService;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Контроллер для работы с комментариями книги должен")
 @WebMvcTest(CommentController.class)
+@WithMockUser(username="admin",password = "123")
 public class CommentControllerTest {
 
     private static final String BOOK_NAME = "book1";
@@ -44,6 +50,12 @@ public class CommentControllerTest {
 
     @MockBean
     private CommentService service;
+
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
+    @MockBean
+    private DataSource dataSource;
 
     @DisplayName("создавать новый комментарий для книги")
     @Test

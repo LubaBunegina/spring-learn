@@ -22,6 +22,7 @@ import ru.diasoft.spring.domain.Genre;
 import ru.diasoft.spring.repository.AuthorRepository;
 import ru.diasoft.spring.repository.BookRepository;
 import ru.diasoft.spring.repository.GenreRepository;
+import ru.diasoft.spring.rest.BookDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,9 @@ public class BookServiceImplTest {
 
     @Autowired
     BookService service;
+
+    @MockBean
+    MapStructMapperImpl mapStructMapper;
 
     @DisplayName("возвращает нужную книгу по id")
     @Test
@@ -110,7 +114,11 @@ public class BookServiceImplTest {
     @Test
     public void shouldSaveBook() throws Exception {
         Book book1 = createBookForTest("book1", "author1", "genre1");
-        service.insert("book1", "genre1", "author1");
+        BookDto dto = new BookDto();
+        dto.setGenreName("genre1");
+        dto.setAuthorName("author1");
+        dto.setName("book1");
+        service.insert(dto);
         verify(bookDao).saveAndFlush(book1);
     }
 
