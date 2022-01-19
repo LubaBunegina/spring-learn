@@ -13,6 +13,7 @@ import ru.diasoft.spring.dao.AuthorDao;
 import ru.diasoft.spring.dao.GenreDao;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.repository.GenreRepository;
 
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(classes = GenreServiceImpl.class)
 public class GenreServiceImplTest {
     @MockBean
-    GenreDao dao;
+    GenreRepository dao;
 
     @Autowired
     GenreService service;
@@ -34,14 +35,14 @@ public class GenreServiceImplTest {
     public void shouldSaveGenre() {
         Genre genre1 = createGenreForTest();
         service.insert(genre1);
-        verify(dao).insert(genre1);
+        verify(dao).save(genre1);
     }
 
     @DisplayName("возвращает жанр по id")
     @Test
     public void shouldReturnGenreById(){
         Genre expectedGenre = createGenreForTest();
-        Mockito.when(dao.getById(1L)).thenReturn(Optional.of(expectedGenre));
+        Mockito.when(dao.findById(1L)).thenReturn(Optional.of(expectedGenre));
 
         Genre actualGenre = service.getById(1L);
 
@@ -53,7 +54,7 @@ public class GenreServiceImplTest {
     @Test
     public void shouldReturnGenreByName(){
         Genre expectedGenre = createGenreForTest();
-        Mockito.when(dao.getByName("genre1")).thenReturn(Optional.of(expectedGenre));
+        Mockito.when(dao.findByName("genre1")).thenReturn(Optional.of(expectedGenre));
         Genre actualGenre = service.getByName("genre1");
         assertEquals(expectedGenre, actualGenre);
     }

@@ -19,6 +19,9 @@ import ru.diasoft.spring.dao.GenreDao;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.repository.AuthorRepository;
+import ru.diasoft.spring.repository.BookRepository;
+import ru.diasoft.spring.repository.GenreRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +35,13 @@ import static org.junit.Assert.assertEquals;
 public class BookServiceImplTest {
 
     @MockBean
-    BookDao bookDao;
+    BookRepository bookDao;
 
     @MockBean
-    AuthorDao authorDao;
+    AuthorRepository authorDao;
 
     @MockBean
-    GenreDao genreDao;
+    GenreRepository genreDao;
 
     @Autowired
     BookService service;
@@ -57,7 +60,7 @@ public class BookServiceImplTest {
         expectedBook.setGenre(genre);
         expectedBook.setAuthor(author);
 
-        Mockito.when(bookDao.getById(1L)).thenReturn(Optional.of(expectedBook));
+        Mockito.when(bookDao.findById(1L)).thenReturn(Optional.of(expectedBook));
 
         Book actualBook = service.getById(1L);
 
@@ -76,8 +79,8 @@ public class BookServiceImplTest {
         Author author = new Author();
         author.setName("author1");
 
-        Mockito.when(bookDao.getBookByAuthor(author)).thenReturn(expectedBooks);
-        Mockito.when(authorDao.getByName("author1")).thenReturn(Optional.of(author));
+        Mockito.when(bookDao.findByAuthor(author)).thenReturn(expectedBooks);
+        Mockito.when(authorDao.findByName("author1")).thenReturn(Optional.of(author));
 
         List<Book> actualBooks = service.getBookByAuthor(author.getName());
 
@@ -95,7 +98,7 @@ public class BookServiceImplTest {
         expectedBookList.add(book1);
         expectedBookList.add(book2);
 
-        Mockito.when(bookDao.getAll()).thenReturn(expectedBookList);
+        Mockito.when(bookDao.findAll()).thenReturn(expectedBookList);
 
         List<Book> actualBookList = service.getAll();
 
@@ -108,7 +111,7 @@ public class BookServiceImplTest {
     public void shouldSaveBook() throws Exception {
         Book book1 = createBookForTest("book1", "author1", "genre1");
         service.insert("book1", "genre1", "author1");
-        verify(bookDao).insert(book1);
+        verify(bookDao).saveAndFlush(book1);
     }
 
     @DisplayName("удаляет книгу")
@@ -117,10 +120,10 @@ public class BookServiceImplTest {
 
         Book book1 = createBookForTest("book1", "author1", "genre1");
 
-        Mockito.when(bookDao.getById(1L)).thenReturn(Optional.of(book1));
+        Mockito.when(bookDao.getById(1L)).thenReturn(book1);
 
         service.delete(1L);
-        verify(bookDao).delete(1L);
+        verify(bookDao).deleteBookById(1L);
     }
 
     private Book createBookForTest(String bookName, String authorName, String genreName) {

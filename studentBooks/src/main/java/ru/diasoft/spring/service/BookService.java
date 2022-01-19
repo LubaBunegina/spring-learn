@@ -7,7 +7,7 @@ import ru.diasoft.spring.domain.Genre;
 import java.util.List;
 
 public interface BookService {
-    void insert(String bookName, String genreName, String authorName) throws Exception;
+    Book insert(String bookName, String genreName, String authorName) throws Exception;
     void update(Long bookId, String bookName, String authorName, String genreName) throws Exception;
     void delete(Long id) throws Exception;
     Book getById(Long id);

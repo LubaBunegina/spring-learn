@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface CommentService {
     void insert(String author, String bookName, String commentText);
+    Comment insert(String author, Long bookId, String commentText);
     List<Comment> getCommentByBook(String bookName);
 }
