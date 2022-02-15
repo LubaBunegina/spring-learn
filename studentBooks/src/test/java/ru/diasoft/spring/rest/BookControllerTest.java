@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -92,7 +94,8 @@ public class BookControllerTest {
         BookDto bookDto = createBookDtoForTest();
         String expectedResult = mapper.writeValueAsString(bookDto);
         given(mapStructMapper.bookToBookDto(book)).willReturn(bookDto);
-        mvc.perform(post("/api/books").contentType(APPLICATION_JSON)
+        mvc.perform(post("/api/books").with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages")))
+                .contentType(APPLICATION_JSON)
                 .content(expectedResult))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResult));
@@ -107,7 +110,7 @@ public class BookControllerTest {
         given(service.getById(1L)).willReturn(book);
         given(mapStructMapper.bookToBookDto(book)).willReturn(expectedResult);
 
-        mvc.perform(get("/api/books/1"))
+        mvc.perform(get("/api/books/1").with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages"))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(expectedResult)));
     }
@@ -115,7 +118,7 @@ public class BookControllerTest {
     @DisplayName("удалять книгу по идентификатору")
     @Test
     void shouldCorrectDeleteBook() throws Exception {
-        mvc.perform(delete("/api/books/1"))
+        mvc.perform(delete("/api/books/1").with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages"))))
                 .andExpect(status().isOk());
         verify(service, times(1)).delete(1L);
     }
@@ -128,7 +131,7 @@ public class BookControllerTest {
         given(mapStructMapper.bookToBookDto(book)).willReturn(bookDto);
         given(service.getById(1L)).willReturn(book);
         mvc.perform(
-                put("/api/books/{id}", book.getId())
+                put("/api/books/{id}", book.getId()).with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages")))
                         .content(mapper.writeValueAsString(mapStructMapper.bookToBookDto(book)))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
