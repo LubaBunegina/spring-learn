@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 @DisplayName("Dao для работы с книгами должно")
 @DataJpaTest
 @Import(BookDaoImpl.class)
+@ComponentScan(basePackages = "ru.diasoft.spring.config")
 public class BookDaoImplTest {
 
     private static final long EXISTING_BOOK_ID = 1;
@@ -72,11 +74,11 @@ public class BookDaoImplTest {
     void shouldCorrectDeleteBookById() {
         Book expectedBook = createBook();
         em.persist(expectedBook);
-        assertThatCode(() -> bookDao.getById(EXISTING_BOOK_ID))
+        assertThatCode(() -> bookDao.getById(expectedBook.getId()))
                 .doesNotThrowAnyException();
-        bookDao.delete(EXISTING_BOOK_ID);
+        bookDao.delete(expectedBook.getId());
         em.detach(expectedBook);
-        assertThat(bookDao.getById(EXISTING_BOOK_ID))
+        assertThat(bookDao.getById(expectedBook.getId()))
                 .isEqualTo(Optional.empty());
     }
 
@@ -88,8 +90,7 @@ public class BookDaoImplTest {
         em.persist(expectedBook);
         List<Book> actualBookList = bookDao.getAll();
         assertThat(actualBookList)
-                .usingFieldByFieldElementComparator()
-                .containsExactlyInAnyOrder(expectedBook);
+                .contains(expectedBook);
     }
 
     private Book createBook(){

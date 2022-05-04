@@ -2,7 +2,7 @@ package ru.diasoft.spring.service;
 
 import org.springframework.stereotype.Service;
 import ru.diasoft.spring.domain.Book;
-import ru.diasoft.spring.rest.BookDto;
+import ru.diasoft.spring.dto.BookDto;
 
 import java.util.ArrayList;
 import java.util.List;

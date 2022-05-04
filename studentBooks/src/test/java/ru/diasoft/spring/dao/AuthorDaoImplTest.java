@@ -4,9 +4,9 @@ package ru.diasoft.spring.dao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 import ru.diasoft.spring.domain.Author;
@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Dao для работы с авторами должно")
 @DataJpaTest
 @Import(AuthorDaoImpl.class)
+@ComponentScan(basePackages = "ru.diasoft.spring.config")
 public class AuthorDaoImplTest {
 
     private static final String EXISTING_AUTHOR_NAME = "authorTest";

@@ -2,9 +2,12 @@ package ru.diasoft.spring.rest;
 
 import org.springframework.web.bind.annotation.*;
 import ru.diasoft.spring.domain.Book;
+import ru.diasoft.spring.dto.BookDto;
+import ru.diasoft.spring.dto.LibraryDto;
+import ru.diasoft.spring.dto.StudentDto;
+import ru.diasoft.spring.exception.NotFoundException;
 import ru.diasoft.spring.service.BookService;
 import ru.diasoft.spring.service.MapStructMapper;
-import ru.diasoft.spring.service.MapStructMapperImpl;
 
 import java.util.List;
 
@@ -24,8 +27,32 @@ public class BookController {
         return service.getAllDto();
     }
 
+    //книги, которые читает студент
+    @RequestMapping(value = "/api/books/student", method = RequestMethod.GET)
+    public List<BookDto> getAllBooksByStudent(@RequestParam String studentName) {
+        return service.getAllByStudent(studentName);
+    }
+
+    //кто, читает эту книгу
+    @RequestMapping(value = "/api/students", method = RequestMethod.GET)
+    public StudentDto getStudentByBook(@RequestParam String bookName) {
+        return service.getStudentByBookName(bookName);
+    }
+
+    //студент взял книгу из бибилиотеки
+    @RequestMapping(value = "/api/addLibraryLink", method = RequestMethod.GET)
+    public LibraryDto addLibraryLink(@RequestBody LibraryDto dto) {
+        return service.addLibraryLink(dto);
+    }
+
+    //студент сдал книгу в библиотеку
+    @RequestMapping(value = "/api/deleteLibraryLink", method = RequestMethod.GET)
+    public void deleteLibraryLink(@RequestBody LibraryDto dto) {
+        service.deleteLibraryLink(dto);
+    }
+
     @GetMapping("/api/books/{id}")
-    public BookDto getBookById(@PathVariable("id") long id) {
+    public BookDto getBookById(@PathVariable("id") long id) throws NotFoundException {
         Book book = service.getById(id);
         return mapper.bookToBookDto(book);
     }

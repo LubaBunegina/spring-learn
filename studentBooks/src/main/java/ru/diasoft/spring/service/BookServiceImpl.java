@@ -1,31 +1,39 @@
 package ru.diasoft.spring.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.diasoft.spring.dao.AuthorDao;
-import ru.diasoft.spring.dao.GenreDao;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.dto.LibraryDto;
+import ru.diasoft.spring.dto.StudentDto;
+import ru.diasoft.spring.feign.LibraryClient;
+import ru.diasoft.spring.feign.StudentClient;
 import ru.diasoft.spring.repository.AuthorRepository;
 import ru.diasoft.spring.repository.BookRepository;
 import ru.diasoft.spring.repository.GenreRepository;
-import ru.diasoft.spring.rest.BookDto;
-import ru.diasoft.spring.rest.NotFoundException;
+import ru.diasoft.spring.dto.BookDto;
+import ru.diasoft.spring.exception.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Service
+@Service("book-service")
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookDao;
     private final GenreRepository genreDao;
     private final AuthorRepository authorDao;
     private final MapStructMapper mapper;
+
+    @Autowired
+    StudentClient studentClient;
+
+    @Autowired
+    LibraryClient libraryClient;
 
     @Override
     public Book insert(BookDto dto) throws Exception {
@@ -118,7 +126,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book getById(Long id) {
+    public Book getById(Long id) throws NotFoundException {
         Book optionalBook = bookDao.findById(id).orElseThrow(NotFoundException::new);
         return optionalBook;
     }
@@ -142,12 +150,73 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<BookDto> getAllByIds(List<Long> ids) {
+        return  mapper.booksToBookDtoList(bookDao.findBooksByIdIn(ids));
+    }
+
+    @Override
     public List<Book> getAll() {
         return bookDao.findAll();
     }
 
     public List<BookDto> getAllDto() {
         return mapper.booksToBookDtoList(getAll());
+    }
+
+    @Override
+    public List<BookDto> getAllByStudent(String studentName) {
+        List<BookDto> bookDtos = new ArrayList<>();
+        StudentDto studentDto = studentClient.getStudentByName(studentName);
+        if(studentDto != null) {
+            List<LibraryDto> libraryDtos = libraryClient.getLibraryByStudentId(studentDto.getId());
+            if(libraryDtos != null) {
+                List<Long> bookIds = new ArrayList<>();
+                for(LibraryDto lib : libraryDtos) {
+                    bookIds.add(lib.getBookId());
+                }
+                if(bookIds.size() != 0) {
+                    bookDtos.addAll( mapper.booksToBookDtoList(
+                            bookDao.findBooksByIdIn(bookIds)));
+                }
+            }
+        }
+
+
+        return bookDtos;
+    }
+
+    @Override
+    public StudentDto getStudentByBookName(String bookName) {
+        Optional<Book> bookOp = bookDao.findBookByName(bookName);
+        StudentDto studentDto = new StudentDto();
+        if(bookOp.isPresent()) {
+            Book book = bookOp.get();
+            List<LibraryDto> libraryDtos= libraryClient.getLibraryByBookId(book.getId());
+            if(libraryDtos != null && libraryDtos.size() > 0) {
+                studentDto = studentClient.getStudentById(
+                        libraryDtos.get(0).getStudentId());
+            }
+        }
+        return studentDto;
+    }
+
+    @Override
+    public LibraryDto addLibraryLink(LibraryDto dto) {
+        List<LibraryDto> searchDto = libraryClient.getLibraryByStudentIdAndBookId(dto.getStudentId(), dto.getBookId());
+        if(searchDto != null && searchDto.size() > 0) {
+            return new LibraryDto();
+        } else {
+            return libraryClient.create(dto);
+        }
+    }
+
+    @Override
+    public void deleteLibraryLink(LibraryDto dto) {
+        List<LibraryDto> searchDto = libraryClient.getLibraryByStudentIdAndBookId(dto.getStudentId(), dto.getBookId());
+        if(searchDto != null && searchDto.size() != 0) {
+            long id = searchDto.get(0).getId();
+            libraryClient.deleteById(id);
+        }
     }
 
 }

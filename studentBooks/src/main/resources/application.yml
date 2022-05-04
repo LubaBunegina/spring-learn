@@ -26,5 +26,12 @@ logging:
   file:
     name: myapplication.log
 
+server:
+  port: 8080
+
+library:
+  service:
+    url: http://localhost:8081
+
 
 
