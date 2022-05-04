@@ -25,8 +25,4 @@ public class BookDto {
         this.authorName = authorName;
     }
 
-
-    public static BookDto toDto(Book book) {
-        return new BookDto(book.getId(), book.getName(), book.getGenre().getName(), book.getAuthor().getName());
-    }
 }

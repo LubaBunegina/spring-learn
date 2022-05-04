@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.diasoft.spring.rest.BookDto;
 import ru.diasoft.spring.service.*;
 
 @ShellComponent
@@ -33,7 +34,12 @@ public class BookCommands {
                            @ShellOption(help = "genre name") String genreName,
                            @ShellOption(help = "author name") String authorName) throws Exception {
 
-        bookService.insert(bookName, genreName, authorName);
+        BookDto dto = new BookDto();
+        dto.setAuthorName(authorName);
+        dto.setGenreName(genreName);
+        dto.setName(bookName);
+
+        bookService.insert(dto);
         System.out.println("Book added");
 
     }

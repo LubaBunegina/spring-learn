@@ -6,21 +6,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Comment;
 import ru.diasoft.spring.domain.Genre;
+import ru.diasoft.spring.rest.CommentController;
+import ru.diasoft.spring.rest.CommentDto;
+import ru.diasoft.spring.security.CustomUserDetailsService;
 import ru.diasoft.spring.service.BookService;
 import ru.diasoft.spring.service.CommentService;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("Контроллер для работы с комментариями книги должен")
 @WebMvcTest(CommentController.class)
+@WithMockUser(username="admin",password = "123")
 public class CommentControllerTest {
 
     private static final String BOOK_NAME = "book1";
@@ -45,14 +52,20 @@ public class CommentControllerTest {
     @MockBean
     private CommentService service;
 
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
+    @MockBean
+    private DataSource dataSource;
+
     @DisplayName("создавать новый комментарий для книги")
     @Test
     void shouldCorrectSaveNewComment() throws Exception {
         Comment comment = createComment(COMMENT_NIK, COMMENT_TEXT );
         given(service.insert(COMMENT_NIK, 1L, COMMENT_TEXT)).willReturn(comment);
         String expectedResult = mapper.writeValueAsString(CommentDto.toDto(comment));
-
-        mvc.perform(post("/api/comments").contentType(APPLICATION_JSON)
+        mvc.perform(post("/api/comments").with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages")))
+                .contentType(APPLICATION_JSON)
                 .content(expectedResult))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResult));
@@ -72,7 +85,9 @@ public class CommentControllerTest {
         List<CommentDto> expectedResult = comments.stream()
                 .map(CommentDto::toDto).collect(Collectors.toList());
 
-        mvc.perform(get("/api/comments").param("bookName", BOOK_NAME))
+        mvc.perform(get("/api/comments")
+                .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_messages")))
+                .param("bookName", BOOK_NAME))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(expectedResult)));
     }

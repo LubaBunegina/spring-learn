@@ -11,10 +11,12 @@ import ru.diasoft.spring.domain.Genre;
 import ru.diasoft.spring.repository.AuthorRepository;
 import ru.diasoft.spring.repository.BookRepository;
 import ru.diasoft.spring.repository.GenreRepository;
+import ru.diasoft.spring.rest.BookDto;
 import ru.diasoft.spring.rest.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -23,9 +25,14 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookDao;
     private final GenreRepository genreDao;
     private final AuthorRepository authorDao;
+    private final MapStructMapper mapper;
 
     @Override
-    public Book insert(String bookName, String genreName, String authorName) throws Exception {
+    public Book insert(BookDto dto) throws Exception {
+
+        String genreName = dto.getGenreName();
+        String bookName = dto.getName();
+        String authorName = dto.getAuthorName();
 
         if(genreName == null || bookName == null || authorName == null){
             throw new Exception("genreName or bookName or authorName is empty");
@@ -137,6 +144,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getAll() {
         return bookDao.findAll();
+    }
+
+    public List<BookDto> getAllDto() {
+        return mapper.booksToBookDtoList(getAll());
     }
 
 }
