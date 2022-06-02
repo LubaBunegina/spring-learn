@@ -1,0 +1,13 @@
+version: "3"
+services:
+  books:
+    image: books-0.0.1:latest
+    hostname: localhost
+    ports:
+      - 8080:8080
+  students:
+    image: student-service-0.0.1:0.0.1
+    hostname: localhost
+    ports:
+      - 8081:8081
+
