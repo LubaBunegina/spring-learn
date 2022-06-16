@@ -1,7 +1,7 @@
 package ru.diasoft.spring.service;
 
 import ru.diasoft.spring.domain.Book;
-import ru.diasoft.spring.rest.BookDto;
+import ru.diasoft.spring.dto.BookDto;
 
 import java.util.List;
 

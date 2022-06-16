@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Repository для работы с книгами должно")
 @DataJpaTest
+@ComponentScan(basePackages = "ru.diasoft.spring.config")
 public class BookRepositoryTest {
 
     private static final long EXISTING_BOOK_ID = 1;

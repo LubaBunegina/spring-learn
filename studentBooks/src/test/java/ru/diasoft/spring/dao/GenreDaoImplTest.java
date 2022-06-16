@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 import ru.diasoft.spring.domain.Genre;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Dao для работы с жанрами должно")
 @DataJpaTest
 @Import(GenreDaoImpl.class)
+@ComponentScan(basePackages = "ru.diasoft.spring.config")
 public class GenreDaoImplTest {
 
     private static final long EXISTING_GENRE_ID = 1;

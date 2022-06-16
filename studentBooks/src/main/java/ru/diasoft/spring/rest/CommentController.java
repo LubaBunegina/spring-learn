@@ -1,8 +1,8 @@
 package ru.diasoft.spring.rest;
 
 import org.springframework.web.bind.annotation.*;
-import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Comment;
+import ru.diasoft.spring.dto.CommentDto;
 import ru.diasoft.spring.service.CommentService;
 
 import java.util.List;

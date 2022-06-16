@@ -1,29 +1,19 @@
 package ru.diasoft.spring.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.diasoft.spring.SpringSecurityConfig;
 import ru.diasoft.spring.domain.Author;
 import ru.diasoft.spring.domain.Book;
 import ru.diasoft.spring.domain.Genre;
-import ru.diasoft.spring.repository.UserRepository;
-import ru.diasoft.spring.rest.BookController;
-import ru.diasoft.spring.rest.BookDto;
+import ru.diasoft.spring.dto.BookDto;
 import ru.diasoft.spring.security.CustomUserDetailsService;
 import ru.diasoft.spring.service.BookService;
 import ru.diasoft.spring.service.MapStructMapperImpl;
@@ -31,7 +21,6 @@ import ru.diasoft.spring.service.MapStructMapperImpl;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,11 +28,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 
 @DisplayName("Контроллер для работы с книгами должен")
 @WebMvcTest(BookController.class)
@@ -139,6 +128,12 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.name").value("b1"))
                 .andExpect(jsonPath("$.genreName").value("g1"))
                 .andExpect(jsonPath("$.authorName").value("a1"));
+    }
+
+    @DisplayName("возврощать все книги, которые читает студент")
+    @Test
+    void shouldReturnAllBooksThatReadStudent() {
+
     }
 
 
