@@ -11,16 +11,22 @@ import ru.diasoft.spring.domain.Comment;
 import ru.diasoft.spring.repository.BookRepository;
 import ru.diasoft.spring.repository.CommentRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+@Transactional
 public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentDao;
     private final BookRepository bookDao;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Transactional
     @Override
@@ -31,6 +37,7 @@ public class CommentServiceImpl implements CommentService{
             comment.setBook(optionalBook.get());
             comment.setText(commentText);
             comment.setAuthor(author);
+            em.persist(optionalBook.get());
             commentDao.save(comment);
         }
         return;
@@ -44,6 +51,7 @@ public class CommentServiceImpl implements CommentService{
             comment.setBook(optionalBook.get());
             comment.setText(commentText);
             comment.setAuthor(author);
+            em.persist(optionalBook.get());
             Comment savedComment = commentDao.save(comment);
             return savedComment;
         }
